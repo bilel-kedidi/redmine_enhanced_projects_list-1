@@ -3,23 +3,15 @@ Redmine::Plugin.register :redmine_enhanced_projects_list do
   author 'Bilel KEDIDI'
   description 'This is a plugin for Redmine'
   version '0.1.0'
-  url 'https://github.com/Atrasoftware/redmine-enhanced-projects-list'
+  url 'https://github.com/bilel-kedidi/redmine-enhanced-projects-list'
 
   permission :copy, :projects => :copy
   settings :default => {
-      'name'  => true,
-      'description'     => true,
-      'created_on'         => true,
-      'update_on' => true,
-      'sorting_projects_order'=> false
+      'sort_name'  => 'project_identifier',
+      'sorting_projects_order'=> 'ASC'
   }, :partial => 'settings/setting'
 end
 Rails.application.config.to_prepare do
-  ProjectsController.send(:include, Patches::ProjectsControllerPatch)
-  ProjectsHelper.send(:include, Patches::ProjectsHelperPatch)
+  require 'collective_idea/acts/nested_set/model/rebuildable'
   Project.send(:include, Patches::ProjectPatch)
-  IssuesController.send(:include, Patches::IssuesHelperPatch)
-  IssueQuery.send(:include, Patches::IssueQueryPatch)
-  QueriesHelper.send(:include, Patches::QueriesHelperPatch)
-  ContextMenusController.send(:include, Patches::ContextMenusControllerPatch)
 end

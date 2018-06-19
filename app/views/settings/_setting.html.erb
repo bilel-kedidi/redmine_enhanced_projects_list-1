@@ -1,26 +1,16 @@
-
+<%
+  Project.change_act_as_nested
+  Project.update_all({order_lft: nil, order_rgt: nil})
+  Project.rebuild! %>
 <div class="">
-  <p style="display: none;">
-    <%= check_box_tag("settings[identifier]", true, true) %>
-  </p>
-  <% Project.column_names.reject{|col| ['id', 'lft', 'rgt','parent_id','identifier'].include? col}.each do |column| %>
-      <p>
-        <%= l("field_#{column}".to_sym) %>
-        <%= check_box_tag("settings[#{column}]", true, @settings["#{column}".to_sym]) %>
-      </p>
-  <% end %>
-  <% CustomField.where(type: "ProjectCustomField").each do |cf| %>
-      <p>
-        <%= cf.name %>
-        <%= check_box_tag("settings[#{cf.name}]", true, @settings[cf.name.to_sym]) %>
-      </p>
-  <% end  %>
+  <p>
+    Sort by <% array = Project.column_names.reject{|col| ['id', 'lft', 'rgt','parent_id', "order_lft", 'order_rgt'].include? col}.
+      map{|column| [l("field_#{column}".to_sym),  "project_#{column}" ]}
+               ProjectCustomField.where(nil).map{|cf| [cf.name, "cf_#{cf.id}" ]}.each do |v|
+                 array << v
+               end
+  %>
 
-  <p>
-    ===========================
-  </p>
-  <p>
-    Sort projects:
-    <%= select_tag("settings[sorting_projects_order]", options_for_select([['ASC',false],['DESC',true]], @settings[:sorting_projects_order] )) %>
+    <%= select_tag("settings[sorting_name]", options_for_select(array.compact, selected: @settings['sorting_name'] )) %>
   </p>
 </div>
