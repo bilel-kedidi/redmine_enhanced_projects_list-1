@@ -7,11 +7,15 @@ Redmine::Plugin.register :redmine_enhanced_projects_list do
 
   permission :copy, :projects => :copy
   settings :default => {
-      'sort_name'  => 'project_identifier',
+      'sorting_name'  => 'project_identifier',
       'sorting_projects_order'=> 'ASC'
-  }, :partial => 'settings/setting'
+  }, :partial => 'repl_settings/setting'
 end
 Rails.application.config.to_prepare do
   require 'collective_idea/acts/nested_set/model/rebuildable'
+  require 'collective_idea/acts/nested_set/model/relatable'
+  require 'collective_idea/acts/nested_set/model/movable'
   Project.send(:include, Patches::ProjectPatch)
+  CustomValue.send(:include, Patches::CustomValuePatch)
+  ApplicationHelper.send(:include, Patches::ApplicationHelperPatch)
 end
